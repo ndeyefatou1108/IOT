@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capteurs - Éco-Logement Connecté</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('/static/images/cap.webp'); /* Chemin de l'image pour l'arrière-plan */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7); /* Couleur de fond semi-transparente */
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        table {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+        }
+
+        h1, h2 {
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .btn-success {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Éco-Logement</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/consommation">Consommation</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/capteurs">Capteurs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/economies">Économies</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/configuration">Configuration</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/meteo_page">Météo</a></li>
+                     <li class="nav-item"><a class="nav-link {% if request.path.startswith('/pieces') %}active{% endif %}" href="/pieces">Pièces</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Capteurs / Actionneurs</h1>
+
+        <!-- Tableau des capteurs existants -->
+        <h2 class="text-center mt-5">Mesures des Capteurs Existants</h2>
+        <table class="table table-striped" id="table-capteurs-existants">
+            <thead>
+                <tr>
+                    <th>ID Mesure</th>
+                    <th>Capteur</th>
+                    <th>Valeur</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les données des capteurs existants seront injectées ici par JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Tableau des mesures du capteur ESP -->
+        <h2 class="text-center mt-5">Mesures du Capteur ESP</h2>
+        <table class="table table-striped" id="table-esp-mesures">
+            <thead>
+                <tr>
+                    <th>ID Mesure</th>
+                    <th>Température (°C)</th>
+                    <th>Humidité (%)</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les données du capteur ESP seront injectées ici par JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Section des pièces associées aux capteurs -->
+        <h2 class="text-center mt-5">Pièces Associées aux Capteurs</h2>
+        <div class="row" id="pieces-section">
+            <!-- Les pièces et capteurs associés seront injectés ici via JavaScript -->
+        </div>
+
+        <!-- Boutons pour télécharger les relevés -->
+        <div class="text-center mt-4">
+            <a href="/telecharger_mesures" class="btn btn-success">Télécharger le relevé des mesures</a>
+            <a href="/telecharger_mesures_esp" class="btn btn-success">Télécharger les données du capteur ESP</a>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5 py-3 bg-light">
+        <p>© 2024 - Projet Éco-Logement</p>
+    </footer>
+
+    <!-- Script pour charger les mesures via AJAX -->
+    <script>
+        // Charger les mesures des capteurs existants
+        function chargerMesuresExistants() {
+            fetch('/api/mesures')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#table-capteurs-existants tbody');
+                    tableBody.innerHTML = ''; // Réinitialiser la table
+                    data.forEach(mesure => {
+                        const row = `
+                            <tr>
+                                <td>${mesure.id_mesure}</td>
+                                <td>${mesure.id_capteur}</td>
+                                <td>${mesure.valeur.toFixed(2)}</td>
+                                <td>${mesure.date_insertion}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Erreur lors du chargement des mesures existantes:', error));
+        }
+
+        // Charger les mesures du capteur ESP
+        function chargerMesuresESP() {
+            fetch('/api/mesures_esp')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#table-esp-mesures tbody');
+                    tableBody.innerHTML = ''; // Réinitialiser la table
+                    data.forEach(mesure => {
+                        const row = `
+                            <tr>
+                                <td>${mesure.id_mesure}</td>
+                                <td>${mesure.temperature.toFixed(2)}</td>
+                                <td>${mesure.humidity ? mesure.humidity.toFixed(2) : 'N/A'}</td>
+                                <td>${mesure.date_insertion}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Erreur lors du chargement des mesures ESP:', error));
+        }
+
+        // Charger les pièces et capteurs associés
+        function chargerPiecesEtCapteurs() {
+            fetch('/api/pieces_capteurs')
+                .then(response => response.json())
+                .then(data => {
+                    const piecesSection = document.querySelector('#pieces-section');
+                    data.forEach(piece => {
+                        const pieceDiv = document.createElement('div');
+                        pieceDiv.className = 'col-md-6';
+                        pieceDiv.innerHTML = `
+                            <h3>${piece.nom_piece}</h3>
+                            <ul>
+                                ${piece.capteurs.map(c => `<li>${c.nom_type} (${c.port_comm})</li>`).join('')}
+                            </ul>
+                        `;
+                        piecesSection.appendChild(pieceDiv);
+                    });
+                })
+                .catch(error => console.error('Erreur lors du chargement des pièces et capteurs:', error));
+        }
+
+        // Charger toutes les données
+        setInterval(() => {
+            chargerMesuresExistants();
+            chargerMesuresESP();
+            chargerPiecesEtCapteurs();
+        }, 10000);
+
+        // Charger immédiatement au chargement de la page
+        chargerMesuresExistants();
+        chargerMesuresESP();
+        chargerPiecesEtCapteurs();
+    </script>
+</body>
+</html>
+

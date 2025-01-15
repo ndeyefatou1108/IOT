@@ -1,0 +1,26 @@
+/* static/css/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: #007bff;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.container {
+    padding: 20px;
+}
+
+footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+}
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Météo - Éco-Logement</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('/static/images/météo_image.jpg'); /* Chemin vers votre image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7); /* Couleur de fond semi-transparente */
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        table {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+        }
+
+        .table-primary {
+            background-color: #007bff !important;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Éco-Logement</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/meteo_page">Météo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/consommation">Consommation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/capteurs">Capteurs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/economies">Économies</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/configuration">Configuration</a></li>
+                     <li class="nav-item"><a class="nav-link {% if request.path.startswith('/pieces') %}active{% endif %}" href="/pieces">Pièces</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Prévisions météo pour {{ ville }}</h1>
+
+        {% if error %}
+        <div class="alert alert-danger text-center mt-4">
+            {{ error }}
+        </div>
+        {% elif previsions %}
+        <div class="mt-4">
+            <table class="table table-striped table-bordered text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Date</th>
+                        <th>Température (°C)</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prev in previsions %}
+                    <tr>
+                        <td>{{ prev.date }}</td>
+                        <td>{{ prev.temperature }}</td>
+                        <td>{{ prev.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center mt-4">Aucune donnée météo disponible pour cette ville.</p>
+        {% endif %}
+    </div>
+
+    <footer class="text-center mt-5 py-3 bg-light">
+        <p>© 2024 - Projet Éco-Logement</p>
+    </footer>
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
